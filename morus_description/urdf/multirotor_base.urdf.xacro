@@ -1,16 +1,20 @@
 <?xml version="1.0"?>
 
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
+
   <!-- Main multirotor link -->
+    
   <xacro:macro name="multirotor_base_macro"
     params="robot_namespace mass body_width body_height mesh_file mesh_file_mass *inertia">
     
     <link name="base_link"></link>
+
     <joint name="base_joint" type="fixed">
       <origin xyz="0 0 0" rpy="0 0 0" />
       <parent link="base_link" />
       <child link="base_link_inertia" />
     </joint>
+
     <link name="base_link_inertia">
       <inertial>
         <mass value="${mass}" />  <!-- [kg] -->
@@ -62,44 +66,37 @@
     </gazebo>
   </xacro:macro>
 
-  <!-- Macro file for movable mass. It defines joint between mass and stick, and link which defines actual mass. Stick
-  is defined in other macro file-->
-  <xacro:macro name="movable_mass" params="mass_number parent mass dimension color x_axis y_axis z_axis orientation *origin *inertia">
-    <joint name="stick_to_movable_mass_${mass_number}" type="prismatic">
-      <xacro:insert_block name="origin"/>
-      <axis xyz="${x_axis} ${y_axis} ${z_axis}"/>
+  <!-- Macro file for wing. It defines joint between base and wing.-->
+  <xacro:macro name="wing_macro" 
+     params="robot_namespace parent wing_number body_width body_height mass wing_x wing_y wing_z  orientation *origin *inertia">
+    <joint name="base_to_wing_${wing_number}" type="fixed">
+    <xacro:insert_block name="origin" />
+      <axis xyz="0 0 0"/>
       <parent link="${parent}"/>
-      <child link="movable_mass_${mass_number}"/>
-      <limit lower="-0.3" upper="0.3" effort="10000" velocity="20"/>
-      <dynamics damping="10" />  <!--friction="0.1" used only in Gazebo >= 5.0, damping is the viscous friction damping,
-       i.e. Ft = damping * v -->
+      <child link="wing_${wing_number}"/>
     </joint>
-    <link name="movable_mass_${mass_number}">
+
+    <link name="wing_${wing_number}">
       <visual>
-        <!--origin rpy="0 0 ${orientation}" xyz="0 0 ${0*movable_mass_dimension/2}"/-->
-        <origin rpy="0 0 ${orientation}" xyz="0 0 0"/>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <!--mesh filename="package://morus_description/meshes/${mesh_file_mass}"
-            scale="1 1 1" /-->
-          <box size="${1*dimension} ${1*dimension} ${1*dimension}"/>
+          <box size="${1*wing_x} ${1*wing_y} ${1*wing_z}"/>
         </geometry>
       </visual>
+
       <collision>
-        <origin rpy="0 0 0" xyz="0 0 ${0*movable_mass_dimension/2}"/>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <box size="${dimension} ${dimension} ${dimension}"/>
+          <box size="${wing_x} ${wing_y} ${wing_z}"/>
         </geometry>
       </collision>
       <inertial>
-        <origin rpy="0 0 0" xyz="0 0 ${0*movable_mass_dimension/2}"/>
-        <mass value="${mass}"/>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <mass value="${wing_mass}"/>
         <xacro:insert_block name="inertia"/>
       </inertial>
     </link>
 
-    <gazebo reference="movable_mass_${mass_number}">
-      <material>Gazebo/${color}</material>
-    </gazebo>
   </xacro:macro>
 
   <!-- Rotor joint and link -->

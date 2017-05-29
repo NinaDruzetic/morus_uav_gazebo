@@ -24,12 +24,14 @@
   <xacro:property name="rotor_drag_coefficient" value="8.06428e-04" />
   <xacro:property name="rolling_moment_coefficient" value="0.00001" />
 
-  <xacro:property name="movable_mass_mass" value="1" />
-  <xacro:property name="movable_mass_dimension" value="0.08" />
-  <xacro:property name="movable_mass_offset" value="0.025" />
-
   <xacro:property name="imu_mass" value="0.02"/>
   <xacro:property name="imu_size" value="0.01"/>
+
+  <!--definirane vrijednosti za krilo -->
+  <xacro:property name="wing_mass" value="0.02"/>
+  <xacro:property name="wing_x" value="0.01"/>
+  <xacro:property name="wing_y" value="0.9"/>
+  <xacro:property name="wing_z" value="0.25"/>
 
   <xacro:property name="sin45" value="0.7071" />
   <xacro:property name="cos45" value="0.7071" />
@@ -49,17 +51,6 @@
     ixy="0.0" ixz="0.0"  iyz="0.0" /> <!-- [kg*m^2] [kg*m^2] [kg*m^2] [kg*m^2] [kg*m^2] [kg*m^2] -->
   </xacro:property>
 
-  <!-- inertia of a movable mass, assuming it is a cube. The formula is I=ms^2/6 where "s" is length of one side
-   of the cube and "m" is its mass-->
-
-  <xacro:property name="movable_mass_inertia">
-     <inertia 
-     ixx="${(movable_mass_mass * movable_mass_dimension * movable_mass_dimension)/6}" 
-     iyy="${(movable_mass_mass * movable_mass_dimension * movable_mass_dimension)/6}" 
-     izz="${(movable_mass_mass * movable_mass_dimension * movable_mass_dimension)/6}" 
-     ixy="0.0" ixz="0.0"  iyz="0.0" /> <!-- [kg*m^2] [kg*m^2] [kg*m^2] [kg*m^2] [kg*m^2] [kg*m^2] -->
-  </xacro:property>
-
   <xacro:property name="imu_inertia">
     <inertia 
     ixx="${(imu_mass * imu_size * imu_size)/6}" 
@@ -67,6 +58,16 @@
     izz="${(imu_mass * imu_size * imu_size)/6}" 
     ixy="0.0" ixz="0.0"  iyz="0.0" /> <!-- [kg*m^2] [kg*m^2] [kg*m^2] [kg*m^2] [kg*m^2] [kg*m^2] -->
   </xacro:property>
+
+  <!-- definirana inercija za krilo -->
+  <xacro:property name="wing_inertia">
+    <inertia 
+    ixx="${(wing_mass * wing_x * wing_x)/6}" 
+    iyy="${(wing_mass * wing_y * wing_y)/6}" 
+    izz="${(wing_mass * wing_z * wing_z)/6}" 
+    ixy="0.0" ixz="0.0"  iyz="0.0" /> <!-- [kg*m^2] [kg*m^2] [kg*m^2] [kg*m^2] [kg*m^2] [kg*m^2] -->
+  </xacro:property>
+
 
   <!-- Included URDF Files -->
   <xacro:include filename="$(find morus_description)/urdf/multirotor_base.urdf.xacro" />
@@ -81,6 +82,40 @@
     mesh_file_mass="${mesh_file_mass}">
     <xacro:insert_block name="body_inertia" />
   </xacro:multirotor_base_macro>
+   
+
+  <!-- Instantiate wing_macros -->
+  <xacro:wing_macro
+    robot_namespace="$(arg name)" 
+    parent="base_link"
+    wing_number="0"
+    body_width="${body_width}"
+    body_height="${body_height}"
+    mass="${wing_mass}"
+    wing_x="${wing_x}"
+    wing_y="${wing_y}"
+    wing_z="${wing_z}"
+    orientation="1">
+    <origin xyz="${body_width/2} ${body_width/2} ${body_height/2}" rpy="0 0 1.57/2" />
+    <xacro:insert_block name="wing_inertia"/>
+  </xacro:wing_macro>
+
+  <xacro:wing_macro
+    robot_namespace="$(arg name)" 
+    parent="base_link"
+    wing_number="1"
+    body_width="${body_width}"
+    body_height="${body_height}"
+    mass="${wing_mass}"
+    wing_x="${wing_x}"
+    wing_y="${wing_y}"
+    wing_z="${wing_z}"
+    orientation="-1">
+    <origin xyz="${(-1)*body_width/2} ${(-1)*body_width/2} ${body_height/2}" rpy="0 0 1.57/2" />
+    <!-- origin xyz="0.5 0.5 0.5 " rpy="0 0 0 " -->
+    <xacro:insert_block name="wing_inertia"/>
+  </xacro:wing_macro>
+  
 
   <!-- Instantiate rotors -->
   <xacro:vertical_rotor
@@ -158,90 +193,6 @@
     <origin xyz="0 ${-(arm_length+arm_offset)} ${propeler_offset}" rpy="0 0 0" />
     <xacro:insert_block name="rotor_inertia" />
   </xacro:vertical_rotor>
-
-
-  <!-- Instantiate movable mass 0-->
-  <xacro:movable_mass 
-    mass_number="0" 
-    parent="base_link"
-    mass="${movable_mass_mass}"
-    dimension="${movable_mass_dimension}"
-    color="Red"
-    x_axis="1"
-    y_axis="0"
-    z_axis="0"
-    orientation="${PI}">
-    <origin xyz="${(arm_length/2+arm_offset)} 0.0 ${movable_mass_offset}" rpy="0 0 0" />
-    <xacro:insert_block name="movable_mass_inertia"/>
-  </xacro:movable_mass>
-
-  <!-- Instantiate movable mass 1 -->
-  <xacro:movable_mass 
-    mass_number="1" 
-    parent="base_link"
-    mass="${movable_mass_mass}"
-    dimension="${movable_mass_dimension}"
-    color="Blue"
-    x_axis="0"
-    y_axis="1"
-    z_axis="0"
-    orientation="${PI/2}">
-    <origin xyz="0.0 ${(arm_length/2+arm_offset)} ${movable_mass_offset}" rpy="0 0 0" />
-    <xacro:insert_block name="movable_mass_inertia"/>
-  </xacro:movable_mass>
-
-
-  <!-- Instantiate movable mass 2-->
-  <xacro:movable_mass 
-    mass_number="2" 
-    parent="base_link"
-    mass="${movable_mass_mass}"
-    dimension="${movable_mass_dimension}"
-    color="Blue"
-    x_axis="-1"
-    y_axis="0"
-    z_axis="0"
-    orientation="${PI}">>
-    <origin xyz="${-(arm_length/2+arm_offset)} 0.0 ${movable_mass_offset}" rpy="0 0 0" />
-    <xacro:insert_block name="movable_mass_inertia"/>
-  </xacro:movable_mass>
-
-
-  <!-- Instantiate movable mass 3 -->
-  <xacro:movable_mass 
-    mass_number="3" 
-    parent="base_link"
-    mass="${movable_mass_mass}"
-    dimension="${movable_mass_dimension}"
-    color="Blue"
-    x_axis="0"
-    y_axis="-1"
-    z_axis="0"
-    orientation="${PI/2}">>
-    <origin xyz="0.0 ${-(arm_length/2+arm_offset)} ${movable_mass_offset}" rpy="0 0 0" />
-    <xacro:insert_block name="movable_mass_inertia"/>
-  </xacro:movable_mass>
-
-
-  <xacro:transmisija
-    trans_number="0"
-    joint_name="stick_to_movable_mass_0">
-  </xacro:transmisija>
-
-  <xacro:transmisija
-    trans_number="1"
-    joint_name="stick_to_movable_mass_1">
-  </xacro:transmisija>
-
-  <xacro:transmisija
-    trans_number="2"
-    joint_name="stick_to_movable_mass_2">
-  </xacro:transmisija>
-
-  <xacro:transmisija
-    trans_number="3"
-    joint_name="stick_to_movable_mass_3">
-  </xacro:transmisija>
 
   <xacro:property name="land_gear_inertia">
     <inertia
