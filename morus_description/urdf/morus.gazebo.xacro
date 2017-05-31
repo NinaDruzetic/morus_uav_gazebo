@@ -41,27 +41,7 @@ libgazebo_ros_camera
       <headingGaussianNoise>0.0</headingGaussianNoise> <!-- (double): standard deviation of the heading additive Gaussian noise -->
       <rpyOffsets>0.0 0.0 0.0</rpyOffsets> <!-- (Vector3): if non-zero, used to calculate accelOffset and headingOffset so that resulting roll, pitch and yaw errors correspond to this values when the platform is leveled (for compatibility with gazebo_plugins) -->
     </plugin>
-
   </gazebo>
-    <plugin name="lifting_surface" filename="libLiftDragPlugin.so">
-        <a0>0.08727</a0>
-        <alpha_stall>0.3368</alpha_stall>
-        <cla>5.418</cla>
-        <cla_stall>-2.1419</cla_stall>
-        <cda>0.0</cda>
-        <cda_stall>0.0</cda_stall>
-        <cma>0.0</cma>
-        <cma_stall>0.0</cma_stall>
-        <area>3</area>
-        <fluid_density>1.2041</fluid_density>
-        <forward>-1 0 0</forward>
-        <upward>0 -1 0</upward>
-        <cp>0 0 1</cp>
-        <link_name>lifting_surface_link</link_name>
-        <radial_symmetry>false</radial_symmetry>
-      </plugin>
-  <gazebo>
-  
   <!-- Start publishing battery status msgs-->
   <gazebo>
     <plugin filename="libmorus_gazebo_battery_status.so" name="battery_status_11">

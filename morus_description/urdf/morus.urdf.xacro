@@ -96,7 +96,7 @@
     wing_y="${wing_y}"
     wing_z="${wing_z}"
     orientation="1">
-    <origin xyz="${body_width/2} ${body_width/2} ${body_height/2}" rpy="0 0 1.57/2" />
+    <origin xyz="${body_width/2} ${body_width/2} ${body_height/2}" rpy="0 0 0.79" />
     <xacro:insert_block name="wing_inertia"/>
   </xacro:wing_macro>
 
@@ -111,7 +111,7 @@
     wing_y="${wing_y}"
     wing_z="${wing_z}"
     orientation="-1">
-    <origin xyz="${(-1)*body_width/2} ${(-1)*body_width/2} ${body_height/2}" rpy="0 0 1.57/2" />
+    <origin xyz="${(-1)*body_width/2} ${(-1)*body_width/2} ${body_height/2}" rpy="0 0 0.79" />
     <!-- origin xyz="0.5 0.5 0.5 " rpy="0 0 0 " -->
     <xacro:insert_block name="wing_inertia"/>
   </xacro:wing_macro>
