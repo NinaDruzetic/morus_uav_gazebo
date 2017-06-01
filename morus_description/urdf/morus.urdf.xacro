@@ -30,7 +30,7 @@
   <!--definirane vrijednosti za krilo -->
   <xacro:property name="wing_mass" value="0.02"/>
   <xacro:property name="wing_x" value="0.01"/>
-  <xacro:property name="wing_y" value="0.9"/>
+  <xacro:property name="wing_y" value="1.3"/>
   <xacro:property name="wing_z" value="0.25"/>
 
   <xacro:property name="sin45" value="0.7071" />
@@ -85,6 +85,7 @@
    
 
   <!-- Instantiate wing_macros -->
+    
   <xacro:wing_macro
     robot_namespace="$(arg name)" 
     parent="base_link"
@@ -95,10 +96,12 @@
     wing_x="${wing_x}"
     wing_y="${wing_y}"
     wing_z="${wing_z}"
-    orientation="1">
-    <origin xyz="${body_width/2} ${body_width/2} ${body_height/2}" rpy="0 0 0.79" />
+    orientation="1"
+    color="Red">
+    <origin xyz="${body_width/2} ${body_width/2} 0" rpy="0 0 5.495" />
     <xacro:insert_block name="wing_inertia"/>
   </xacro:wing_macro>
+
 
   <xacro:wing_macro
     robot_namespace="$(arg name)" 
@@ -110,12 +113,12 @@
     wing_x="${wing_x}"
     wing_y="${wing_y}"
     wing_z="${wing_z}"
-    orientation="-1">
-    <origin xyz="${(-1)*body_width/2} ${(-1)*body_width/2} ${body_height/2}" rpy="0 0 0.79" />
-    <!-- origin xyz="0.5 0.5 0.5 " rpy="0 0 0 " -->
+    orientation="1"
+    color="Blue">
+    <origin xyz="${(-1)*body_width/2} ${(-1)*body_width/2} 0" rpy="0 0 2.355" />
     <xacro:insert_block name="wing_inertia"/>
   </xacro:wing_macro>
-  
+ 
 
   <!-- Instantiate rotors -->
   <xacro:vertical_rotor

@@ -68,7 +68,7 @@
 
   <!-- Macro file for wing. It defines joint between base and wing.-->
   <xacro:macro name="wing_macro" 
-     params="robot_namespace parent wing_number body_width body_height mass wing_x wing_y wing_z  orientation *origin *inertia">
+     params="robot_namespace parent wing_number body_width body_height mass wing_x wing_y wing_z  orientation color *origin *inertia">
     <joint name="base_to_wing_${wing_number}" type="fixed">
     <xacro:insert_block name="origin" />
       <axis xyz="0 0 0"/>
@@ -78,20 +78,21 @@
 
     <link name="wing_${wing_number}">
       <visual>
-        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <!-- <origin rpy="0 0 0" xyz="0 ${orientation*wing_y*0.5} 0"/> -->
+        <origin rpy="0 0 0" xyz="0 ${orientation*wing_y*0.5} 0"/>
         <geometry>
           <box size="${1*wing_x} ${1*wing_y} ${1*wing_z}"/>
         </geometry>
       </visual>
 
       <collision>
-        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <origin rpy="0 0 0" xyz="0 ${orientation*wing_y*0.5} 0"/>
         <geometry>
           <box size="${wing_x} ${wing_y} ${wing_z}"/>
         </geometry>
       </collision>
       <inertial>
-        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <origin rpy="0 0 0" xyz="0 ${orientation*wing_y*0.5} 0"/>
         <mass value="${wing_mass}"/>
         <xacro:insert_block name="inertia"/>
       </inertial>
@@ -115,6 +116,9 @@
         <!-- <link_name>wing_${wing_number}</link_name> -->
         <control_joint_name>base_to_wing_${wing_number}</control_joint_name>       
       </plugin>
+    </gazebo>
+    <gazebo reference="wing_${wing_number}">
+      <material>Gazebo/${color}</material>
     </gazebo>
   </xacro:macro>
 
